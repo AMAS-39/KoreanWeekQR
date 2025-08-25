@@ -61,7 +61,7 @@ def generate_qr_code(participant, qr_type="url"):
     
     if qr_type == "url":
         # QR code with URL to web page
-        qr_data = f"http://localhost:5000/user/{participant['id']}"
+        qr_data = f"https://korean-week-qr.vercel.app/user/{participant['id']}"
     elif qr_type == "data":
         # QR code with participant data directly
         qr_data = f"""
@@ -124,8 +124,8 @@ def generate_all_qr_codes(qr_type="url"):
     print(f"📁 QR codes saved in '{qr_dir}' folder")
     
     if qr_type == "url":
-        print("🔗 Each QR code links to: http://localhost:5000/user/[participant_id]")
-        print("💡 Make sure to run the web server to view participant data!")
+        print("🔗 Each QR code links to: https://korean-week-qr.vercel.app/user/[participant_id]")
+        print("💡 QR codes work worldwide - no local server needed!")
     elif qr_type == "data":
         print("📋 Each QR code contains participant data directly")
     else:

@@ -123,11 +123,8 @@ def load_participants():
 
 def generate_qr_code(participant_id, participant_name):
     """Generate QR code for a participant"""
-    # Get local IP address
-    local_ip = get_local_ip()
-    
-    # Create QR code with the URL that will show participant data
-    qr_url = f"http://{local_ip}:5000/user/{participant_id}"
+    # Use Vercel URL for production
+    qr_url = f"https://korean-week-qr.vercel.app/user/{participant_id}"
     
     qr = qrcode.QRCode(
         version=1,
@@ -155,8 +152,7 @@ def generate_all_qr_codes():
     """Generate QR codes for all participants"""
     print("🔄 Generating QR codes for all participants...")
     
-    local_ip = get_local_ip()
-    print(f"🌐 Using IP address: {local_ip}")
+    print(f"🌐 Using Vercel URL: https://korean-week-qr.vercel.app")
     
     generated_files = []
     for participant_id, participant in participants_data.items():
@@ -166,7 +162,7 @@ def generate_all_qr_codes():
     
     print(f"\n🎉 Successfully generated {len(generated_files)} QR codes!")
     print("📁 QR codes saved in 'qr_codes' folder")
-    print(f"🔗 Each QR code links to: http://{local_ip}:5000/user/[participant_id]")
+    print(f"🔗 Each QR code links to: https://korean-week-qr.vercel.app/user/[participant_id]")
     
     return generated_files
 
@@ -858,24 +854,21 @@ def main():
         print("❌ Failed to load participants. Exiting.")
         return
     
-    # Get local IP for display
-    local_ip = get_local_ip()
-    
-    # Generate QR codes
+    # Generate QR codes for Vercel deployment
     generate_all_qr_codes()
     
-    print("\n🌐 Starting web server...")
+    print("\n🌐 QR codes generated for Vercel deployment!")
     print("📱 QR codes are ready! Scan any QR code to see participant data.")
-    print(f"🔗 Web server running at: http://{local_ip}:5000")
-    print(f"📋 Dashboard: http://{local_ip}:5000")
+    print(f"🔗 Vercel deployment: https://korean-week-qr.vercel.app")
+    print(f"📋 Dashboard: https://korean-week-qr.vercel.app")
     print("\n💡 How to use:")
     print("1. Open any QR code image from the 'qr_codes' folder")
     print("2. Scan it with your phone camera")
-    print("3. It will open the participant's data page")
-    print("4. Click 'Check In' to mark them as attended")
-    print(f"\n📱 Make sure your phone is on the same WiFi network as this computer!")
+    print("3. It will open the participant's data page on Vercel")
+    print("4. All QR codes work worldwide - no local network needed!")
     
-    # Start the web server
+    # Start the web server for local development
+    print(f"\n🔧 Local development server also available at: http://localhost:5000")
     app.run(debug=False, host='0.0.0.0', port=5000)
 
 if __name__ == "__main__":
