@@ -1,23 +1,35 @@
 #!/usr/bin/env python3
 """
-Generate QR codes for Vercel deployment
+Generate QR codes for Vercel deployment with consistent IDs
 All QR codes will point to korean-week-qr.vercel.app
 """
 
 import pandas as pd
 import qrcode
 import os
-import uuid
+import hashlib
 
 def load_participants():
-    """Load participants from Excel file"""
+    """Load participants from Excel file with consistent IDs"""
     try:
         df = pd.read_excel('korea_week_split(1).xlsx')
         participants = []
         
         for index, row in df.iterrows():
-            # Generate unique ID for each participant
-            participant_id = str(uuid.uuid4())[:8]
+            # Generate consistent ID based on email and name
+            email = row.get('email', '').strip()
+            name = row.get('fullName', '').strip()
+            
+            # Create a consistent hash-based ID
+            if email:
+                # Use email as primary identifier
+                id_string = email.lower()
+            else:
+                # Fallback to name if no email
+                id_string = name.lower()
+            
+            # Generate consistent 8-character ID
+            participant_id = hashlib.md5(id_string.encode()).hexdigest()[:8]
             
             # Clean activities data - handle both JSON format and single activities
             activities = row.get('activities', '')
@@ -35,8 +47,8 @@ def load_participants():
             
             participants.append({
                 'id': participant_id,
-                'fullName': row.get('fullName', ''),
-                'email': row.get('email', ''),
+                'fullName': name,
+                'email': email,
                 'phone': str(row.get('phone', '')),
                 'city': row.get('city', ''),
                 'selectedDay': row.get('selectedDay', ''),
@@ -44,7 +56,7 @@ def load_participants():
                 'dietary': row.get('dietary', '')
             })
         
-        print(f"✅ Loaded {len(participants)} participants")
+        print(f"✅ Loaded {len(participants)} participants with consistent IDs")
         return participants
     except Exception as e:
         print(f"❌ Error loading participants: {e}")
@@ -91,11 +103,25 @@ def generate_all_qr_codes():
     for participant in participants:
         filename = generate_qr_code(participant['id'], participant['fullName'])
         generated_files.append(filename)
-        print(f"✅ Generated: {filename}")
+        print(f"✅ Generated: {filename} (ID: {participant['id']})")
     
     print(f"\n🎉 Successfully generated {len(generated_files)} QR codes!")
     print("📁 QR codes saved in 'vercel_qr_codes' folder")
     print("🔗 All QR codes point to: https://korean-week-qr.vercel.app")
+    
+    # Save participant mapping for reference
+    mapping_file = "participant_mapping.txt"
+    with open(mapping_file, 'w', encoding='utf-8') as f:
+        f.write("Participant ID Mapping for Vercel Deployment\n")
+        f.write("=" * 50 + "\n\n")
+        for participant in participants:
+            f.write(f"ID: {participant['id']}\n")
+            f.write(f"Name: {participant['fullName']}\n")
+            f.write(f"Email: {participant['email']}\n")
+            f.write(f"URL: https://korean-week-qr.vercel.app/user/{participant['id']}\n")
+            f.write("-" * 30 + "\n")
+    
+    print(f"📄 Participant mapping saved to: {mapping_file}")
     
     return generated_files
 

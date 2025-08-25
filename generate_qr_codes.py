@@ -8,7 +8,7 @@ import pandas as pd
 import qrcode
 import os
 from flask import Flask, render_template_string, request
-import uuid
+import hashlib
 from datetime import datetime
 import socket
 import json
@@ -72,8 +72,20 @@ def load_participants():
         existing_checkins = load_checkin_data()
         
         for index, row in df.iterrows():
-            # Generate unique ID for each participant
-            participant_id = str(uuid.uuid4())[:8]
+            # Generate consistent ID based on email and name
+            email = row.get('email', '').strip()
+            name = row.get('fullName', '').strip()
+            
+            # Create a consistent hash-based ID
+            if email:
+                # Use email as primary identifier
+                id_string = email.lower()
+            else:
+                # Fallback to name if no email
+                id_string = name.lower()
+            
+            # Generate consistent 8-character ID
+            participant_id = hashlib.md5(id_string.encode()).hexdigest()[:8]
             
             # Clean activities data - handle both JSON format and single activities
             activities = row.get('activities', '')
@@ -98,9 +110,9 @@ def load_participants():
             
             participants_data[participant_id] = {
                 'id': participant_id,
-                'fullName': row.get('fullName', ''),
+                'fullName': name,
                 'age': row.get('age', ''),
-                'email': row.get('email', ''),
+                'email': email,
                 'phone': str(row.get('phone', '')),
                 'city': row.get('city', ''),
                 'selectedDay': row.get('selectedDay', ''),
