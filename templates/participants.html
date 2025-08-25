@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participants - Korea Week</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+        }
+
+        .participants-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .participants-table th,
+        .participants-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .participants-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .participants-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-checked-in {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #ffd43b, #fcc419);
+            color: #333;
+        }
+
+        .activities-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .activity-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0 30px;
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+            
+            .participants-table {
+                font-size: 0.9rem;
+            }
+            
+            .participants-table th,
+            .participants-table td {
+                padding: 10px 8px;
+            }
+            
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Participants List</h1>
+            <p>Complete list of all registered participants</p>
+        </div>
+
+        <div class="stats-summary">
+            <div class="stat-item">
+                <div class="stat-number">{{ participants|length }}</div>
+                <div class="stat-label">Total Participants</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ participants|selectattr('checked_in')|list|length }}</div>
+                <div class="stat-label">Checked In</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ participants|rejectattr('checked_in')|list|length }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ participants|selectattr('selectedDay', 'equalto', 'day1')|list|length }}</div>
+                <div class="stat-label">Day 1</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by name, email, or city..." onkeyup="filterTable()">
+            </div>
+            <div>
+                <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="/generate-qr-codes" class="btn">📱 Generate QR Codes</a>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="participants-table" id="participantsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>City</th>
+                        <th>Day</th>
+                        <th>Activities</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for participant in participants %}
+                    <tr data-name="{{ participant.fullName.lower() }}" data-email="{{ participant.email.lower() }}" data-city="{{ participant.city.lower() }}">
+                        <td>
+                            <strong>{{ participant.fullName }}</strong>
+                            {% if participant.age %}
+                            <br><small>Age: {{ participant.age }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ participant.email }}</td>
+                        <td>{{ participant.phone }}</td>
+                        <td>{{ participant.city }}</td>
+                        <td>{{ participant.selectedDay.upper() if participant.selectedDay else 'Not specified' }}</td>
+                        <td>
+                            <div class="activities-tags">
+                                {% for activity in participant.activities %}
+                                    <span class="activity-tag">{{ activity.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-badge {% if participant.checked_in %}status-checked-in{% else %}status-pending{% endif %}">
+                                {% if participant.checked_in %}
+                                    ✅ Checked In
+                                {% else %}
+                                    ⏳ Pending
+                                {% endif %}
+                            </div>
+                            {% if participant.check_in_time %}
+                            <br><small>{{ participant.check_in_time.split('T')[1][:5] if participant.check_in_time else '' }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/invite/{{ participant.id }}" class="btn btn-small" target="_blank">
+                                👁️ View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Total Participants: {{ participants|length }} | Last updated: {{ moment().format('YYYY-MM-DD HH:mm') }}</p>
+        </div>
+    </div>
+
+    <script>
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#participantsTable tbody tr');
+            
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name');
+                const email = row.getAttribute('data-email');
+                const city = row.getAttribute('data-city');
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm) || city.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Auto-refresh every 30 seconds to show real-time check-in status
+        setInterval(() => {
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

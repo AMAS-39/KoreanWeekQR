@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korea Week - Digital Pass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .pass-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+        }
+
+        .pass-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .pass-header::before {
+            content: '🇰🇷';
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .pass-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .pass-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .pass-content {
+            padding: 30px 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .activities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: flex-end;
+        }
+
+        .activity-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .check-in-section {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .check-in-btn {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .check-in-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .check-in-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .status-checked-in {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #ffd43b, #fcc419);
+            color: #333;
+        }
+
+        .qr-code {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .pass-card {
+                margin: 10px;
+            }
+            
+            .pass-content {
+                padding: 20px 15px;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .info-value {
+                text-align: left;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pass-card">
+        <div class="pass-header">
+            <h1>KOREA WEEK IN ERBIL</h1>
+            <p>Digital Pass Card</p>
+            <div class="qr-code">📱</div>
+        </div>
+
+        <div class="pass-content">
+            <div class="info-row">
+                <span class="info-label">Name:</span>
+                <span class="info-value">{{ participant.fullName }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ participant.email }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Phone:</span>
+                <span class="info-value">{{ participant.phone }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">City:</span>
+                <span class="info-value">{{ participant.city }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Day:</span>
+                <span class="info-value">{{ participant.selectedDay.upper() if participant.selectedDay else 'Not specified' }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Activities:</span>
+                <div class="info-value">
+                    <div class="activities-list">
+                        {% for activity in participant.activities %}
+                            <span class="activity-tag">{{ activity.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% if participant.dietary %}
+            <div class="info-row">
+                <span class="info-label">Dietary:</span>
+                <span class="info-value">{{ participant.dietary }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="check-in-section">
+            {% if participant.checked_in %}
+                <div class="status-badge status-checked-in">
+                    ✅ Checked In
+                </div>
+                {% if participant.check_in_time %}
+                <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+                    Checked in at: {{ participant.check_in_time.split('T')[1][:5] if participant.check_in_time else '' }}
+                </p>
+                {% endif %}
+            {% else %}
+                <button class="check-in-btn" onclick="checkIn()">
+                    ✅ Check In
+                </button>
+                <div class="status-badge status-pending">
+                    ⏳ Pending Check-in
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        async function checkIn() {
+            const button = document.querySelector('.check-in-btn');
+            button.disabled = true;
+            button.textContent = 'Checking in...';
+
+            try {
+                const response = await fetch(`/check-in/{{ participant.id }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.checked_in) {
+                    // Reload the page to show updated status
+                    window.location.reload();
+                } else {
+                    alert('Check-in failed. Please try again.');
+                    button.disabled = false;
+                    button.textContent = '✅ Check In';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Check-in failed. Please try again.');
+                button.disabled = false;
+                button.textContent = '✅ Check In';
+            }
+        }
+    </script>
+</body>
+</html>

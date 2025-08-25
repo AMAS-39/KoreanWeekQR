@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Codes - Korea Week</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .qr-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .qr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+
+        .qr-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .participant-info {
+            margin-bottom: 15px;
+        }
+
+        .participant-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .participant-details {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-checked-in {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #ffd43b, #fcc419);
+            color: #333;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .qr-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 QR Codes Generated</h1>
+            <p>All {{ participants|length }} participants have unique QR codes</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by name or email..." onkeyup="filterCards()">
+            </div>
+            <div>
+                <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+                <button class="btn" onclick="downloadAllQR()">📥 Download All</button>
+            </div>
+        </div>
+
+        <div class="qr-grid" id="qrGrid">
+            {% for participant_id, participant in participants.items() %}
+            <div class="qr-card" data-name="{{ participant.fullName.lower() }}" data-email="{{ participant.email.lower() }}">
+                <div class="qr-image">
+                    <img src="data:image/png;base64,{{ qr_codes[participant_id] }}" alt="QR Code">
+                </div>
+                
+                <div class="participant-info">
+                    <div class="participant-name">{{ participant.fullName }}</div>
+                    <div class="participant-details">
+                        {{ participant.email }}<br>
+                        {{ participant.phone }}<br>
+                        {{ participant.selectedDay.upper() if participant.selectedDay else 'Day not specified' }}
+                    </div>
+                </div>
+
+                <div class="qr-actions">
+                    <button class="btn btn-small" onclick="downloadQR('{{ participant_id }}', '{{ participant.fullName }}')">
+                        📥 Download
+                    </button>
+                    <a href="/invite/{{ participant_id }}" class="btn btn-small btn-secondary" target="_blank">
+                        👁️ View Card
+                    </a>
+                </div>
+
+                <div class="status-badge {% if participant.checked_in %}status-checked-in{% else %}status-pending{% endif %}">
+                    {% if participant.checked_in %}
+                        ✅ Checked In
+                    {% else %}
+                        ⏳ Pending
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="footer">
+            <p>Total QR Codes: {{ participants|length }} | Ready for distribution</p>
+        </div>
+    </div>
+
+    <script>
+        function filterCards() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.qr-card');
+            
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const email = card.getAttribute('data-email');
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function downloadQR(participantId, participantName) {
+            const qrImage = document.querySelector(`[data-name="${participantName.toLowerCase()}"] img`);
+            const link = document.createElement('a');
+            link.download = `QR_${participantName.replace(/\s+/g, '_')}.png`;
+            link.href = qrImage.src;
+            link.click();
+        }
+
+        function downloadAllQR() {
+            const qrImages = document.querySelectorAll('.qr-image img');
+            qrImages.forEach((img, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.download = `QR_${index + 1}.png`;
+                    link.href = img.src;
+                    link.click();
+                }, index * 100);
+            });
+        }
+    </script>
+</body>
+</html>

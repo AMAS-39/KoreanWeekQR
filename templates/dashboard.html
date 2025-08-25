@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korea Week QR Code System - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .actions {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .action-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .action-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇰🇷 Korea Week QR Code System</h1>
+            <p>Manage invitations and check-ins for Korea Week Event</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_participants }}</div>
+                <div class="stat-label">Total Participants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ checked_in }}</div>
+                <div class="stat-label">Checked In</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_participants - checked_in }}</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <div class="action-card">
+                <h3>📱 Generate QR Codes</h3>
+                <p>Create unique QR codes for all participants that link to their digital invitation cards.</p>
+                <a href="/generate-qr-codes" class="btn">Generate QR Codes</a>
+            </div>
+
+            <div class="action-card">
+                <h3>👥 View Participants</h3>
+                <p>See the complete list of all registered participants and their details.</p>
+                <a href="/participants" class="btn btn-secondary">View Participants</a>
+            </div>
+
+            <div class="action-card">
+                <h3>📊 Check-in Status</h3>
+                <p>Monitor real-time check-in status and attendance tracking.</p>
+                <a href="/participants" class="btn btn-success">View Status</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 Korea Week Event - QR Code Management System</p>
+        </div>
+    </div>
+</body>
+</html>
