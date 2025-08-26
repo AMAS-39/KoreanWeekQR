@@ -54,71 +54,96 @@ def load_participants():
     """Load participants from Excel file"""
     global participants_data
     try:
+        print("🔄 Starting participant loading...")
         df = pd.read_excel('korea_week_split(1).xlsx')
+        print(f"📊 Excel loaded: {len(df)} rows")
         
         # Load existing check-in data
         existing_checkins = load_checkin_data()
         
+        processed_count = 0
+        skipped_count = 0
+        
         for index, row in df.iterrows():
-            # Generate consistent ID based on email and name
-            email = row.get('email', '').strip()
-            name = row.get('fullName', '').strip()
-            
-            # Create a consistent hash-based ID
-            if email:
-                # Use email as primary identifier
-                id_string = email.lower()
-            else:
-                # Fallback to name if no email
-                id_string = name.lower()
-            
-            # Generate consistent 8-character ID
-            participant_id = hashlib.md5(id_string.encode()).hexdigest()[:8]
-            
-            # Clean activities data - handle both JSON format and single activities
-            activities = row.get('activities', '')
-            if isinstance(activities, str):
-                if activities.startswith('["') and activities.endswith('"]'):
-                    # JSON format: ["kimbap","taekwondo","makeup"]
-                    activities = activities.replace('"', '').replace('[', '').replace(']', '').split(',')
-                elif activities:
-                    # Single activity: "kimbap" or "makeup"
-                    activities = [activities.strip()]
+            try:
+                # Generate consistent ID based on email and name
+                email = str(row.get('email', '')).strip()
+                name = str(row.get('fullName', '')).strip()
+                
+                # Skip invalid rows
+                if not name or name == 'nan':
+                    skipped_count += 1
+                    continue
+                
+                # Create a consistent hash-based ID
+                if email and email != 'nan' and '@' in email:
+                    # Use email as primary identifier
+                    id_string = email.lower()
+                else:
+                    # Fallback to name if no email
+                    id_string = name.lower()
+                
+                # Generate consistent 8-character ID
+                participant_id = hashlib.md5(id_string.encode()).hexdigest()[:8]
+                
+                # Clean activities data - handle both JSON format and single activities
+                activities = row.get('activities', '')
+                if isinstance(activities, str):
+                    if activities.startswith('["') and activities.endswith('"]'):
+                        # JSON format: ["kimbap","taekwondo","makeup"]
+                        activities = activities.replace('"', '').replace('[', '').replace(']', '').split(',')
+                    elif activities:
+                        # Single activity: "kimbap" or "makeup"
+                        activities = [activities.strip()]
+                    else:
+                        activities = []
                 else:
                     activities = []
-            else:
-                activities = []
-            
-            # Check if this participant was previously checked in
-            checked_in = False
-            check_in_time = None
-            if participant_id in existing_checkins:
-                checked_in = existing_checkins[participant_id].get('checked_in', False)
-                check_in_time = existing_checkins[participant_id].get('check_in_time')
-            
-            participants_data[participant_id] = {
-                'id': participant_id,
-                'fullName': name,
-                'age': row.get('age', ''),
-                'email': email,
-                'phone': str(row.get('phone', '')),
-                'city': row.get('city', ''),
-                'selectedDay': row.get('selectedDay', ''),
-                'activities': activities,
-                'dietary': row.get('dietary', ''),
-                'emergencyName': row.get('emergencyName', ''),
-                'emergencyPhone': str(row.get('emergencyPhone', '')),
-                'emergencyRelation': row.get('emergencyRelation', ''),
-                'checked_in': checked_in,
-                'check_in_time': check_in_time
-            }
+                
+                # Check if this participant was previously checked in
+                checked_in = False
+                check_in_time = None
+                if participant_id in existing_checkins:
+                    checked_in = existing_checkins[participant_id].get('checked_in', False)
+                    check_in_time = existing_checkins[participant_id].get('check_in_time')
+                
+                participants_data[participant_id] = {
+                    'id': participant_id,
+                    'fullName': name,
+                    'age': row.get('age', ''),
+                    'email': email,
+                    'phone': str(row.get('phone', '')),
+                    'city': row.get('city', ''),
+                    'selectedDay': row.get('selectedDay', ''),
+                    'activities': activities,
+                    'dietary': row.get('dietary', ''),
+                    'emergencyName': row.get('emergencyName', ''),
+                    'emergencyPhone': str(row.get('emergencyPhone', '')),
+                    'emergencyRelation': row.get('emergencyRelation', ''),
+                    'checked_in': checked_in,
+                    'check_in_time': check_in_time
+                }
+                
+                processed_count += 1
+                
+                # Debug output for first few participants
+                if processed_count <= 5:
+                    print(f"  ✅ Processed {processed_count}: {name} (ID: {participant_id})")
+                
+            except Exception as row_error:
+                print(f"❌ Error processing row {index}: {row_error}")
+                skipped_count += 1
+                continue
         
-        print(f"✅ Loaded {len(participants_data)} participants")
+        print(f"✅ Successfully loaded {len(participants_data)} participants")
+        print(f"📊 Processed: {processed_count}, Skipped: {skipped_count}")
         if existing_checkins:
             print(f"📊 Restored {len(existing_checkins)} previous check-ins")
         return True
     except Exception as e:
         print(f"❌ Error loading participants: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def generate_qr_code_base64(participant_id, participant_name):
