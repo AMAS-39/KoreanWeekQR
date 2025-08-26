@@ -107,6 +107,11 @@ def load_participants():
                     checked_in = existing_checkins[participant_id].get('checked_in', False)
                     check_in_time = existing_checkins[participant_id].get('check_in_time')
                 
+                # Clean dietary data - convert 'nan' to None
+                dietary = row.get('dietary', '')
+                if dietary == 'nan' or not dietary:
+                    dietary = None
+                
                 participants_data[participant_id] = {
                     'id': participant_id,
                     'fullName': name,
@@ -116,7 +121,7 @@ def load_participants():
                     'city': row.get('city', ''),
                     'selectedDay': row.get('selectedDay', ''),
                     'activities': activities,
-                    'dietary': row.get('dietary', ''),
+                    'dietary': dietary,
                     'emergencyName': row.get('emergencyName', ''),
                     'emergencyPhone': str(row.get('emergencyPhone', '')),
                     'emergencyRelation': row.get('emergencyRelation', ''),
@@ -647,7 +652,7 @@ HTML_TEMPLATE = """
                 </div>
             </div>
             
-            {% if participant.dietary %}
+            {% if participant.dietary and participant.dietary != 'nan' %}
             <div class="info-section">
                 <div class="section-title">Special Requirements</div>
                 <div class="dietary-info">
