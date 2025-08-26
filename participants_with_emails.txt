@@ -1,0 +1,42 @@
+Participants with emails (can send automatically):
+============================================================
+Name: Fouad Aziz Zada
+Email: FouadZada.ai@gmail.com
+Day: day1
+----------------------------------------
+Name: Dr. Dashne Azad Sdeeq
+Email: dashne.sedeeq@epu.edu.iq
+Day: nan
+----------------------------------------
+Name: Dr. Farman Tahseen Aziz
+Email: farman.tahseen@epu.edu.iq
+Day: nan
+----------------------------------------
+Name: Ahmed Qadr Mohammed Amin
+Email: Ahmed.Barzinji@savino.org
+Day: nan
+----------------------------------------
+Name: Dr. Zanyar Jabbar
+Email: zaniar9kurd@yahoo.com
+Day: nan
+----------------------------------------
+Name: Brwa Abdulla
+Email: brwaabdulla.ba@gmail.com
+Day: nan
+----------------------------------------
+Name: Zaynab Muhsin Taha
+Email: zainabmuhsin521@gmail.com
+Day: day1
+----------------------------------------
+Name: Akar Abdulqahar Othman
+Email: acar.eightyfour@gmail.com
+Day: nan
+----------------------------------------
+Name: ⁠Shahnaz Salim
+Email: shahnazsalim333@gmail.com
+Day: nan
+----------------------------------------
+Name: Slvar Abdulaziz Arif
+Email: slvar.abdulazeez@tiu.edu.iq
+Day: day1
+----------------------------------------
