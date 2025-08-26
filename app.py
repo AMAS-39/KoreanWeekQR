@@ -720,12 +720,31 @@ def index():
                 opacity: 0.9;
                 margin-bottom: 30px;
             }}
+            .debug-info {{
+                background: rgba(255, 255, 255, 0.1);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+                text-align: left;
+                font-family: monospace;
+                font-size: 0.9rem;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
             <h1>🇰🇷 Korea Week QR Code System</h1>
             <p class="subtitle">Hosted on Vercel - korean-week-qr.vercel.app</p>
+            
+            <div class="debug-info">
+                <strong>🔍 Debug Info:</strong><br>
+                • Total participants loaded: {total}<br>
+                • Checked in: {checked_in}<br>
+                • Remaining: {total - checked_in}<br>
+                • Expected: 113+ participants<br>
+                • Status: {'✅ OK' if total >= 100 else '❌ ISSUE DETECTED'}
+            </div>
+            
             <div class="stats">
                 <div class="stat">
                     <h3>Total Participants</h3>
@@ -743,6 +762,7 @@ def index():
             <p>🎉 System is live and ready for Korea Week!</p>
             
             <div class="links">
+                <a href="/debug">🔍 Debug Info</a>
                 <a href="/checkin-data">📊 View Check-in Data</a>
                 <a href="/export-csv">📄 Export to CSV</a>
                 <a href="/qr-codes">🔗 View QR Codes</a>
@@ -923,6 +943,110 @@ def export_csv():
         mimetype="text/csv",
         headers={"Content-disposition": "attachment; filename=checkin_data.csv"}
     )
+
+@app.route('/debug')
+def debug_info():
+    """Show detailed debug information"""
+    import os
+    
+    # Get file info
+    excel_exists = os.path.exists('korea_week_split(1).xlsx')
+    excel_size = os.path.getsize('korea_week_split(1).xlsx') if excel_exists else 0
+    
+    # Count participants by day
+    day_counts = {}
+    for participant in participants_data.values():
+        day = participant.get('selectedDay', 'Unknown')
+        day_counts[day] = day_counts.get(day, 0) + 1
+    
+    # Sample participants
+    sample_participants = list(participants_data.items())[:10]
+    
+    html = f"""
+    <html>
+    <head>
+        <title>Debug Info - Korea Week</title>
+        <style>
+            body {{ 
+                font-family: 'Inter', Arial, sans-serif; 
+                padding: 20px; 
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #cd5c5c 50%, #ff6b6b 75%, #ee5a24 100%);
+                color: white;
+                min-height: 100vh;
+                margin: 0;
+            }}
+            .container {{
+                max-width: 1200px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(20px);
+                border-radius: 20px;
+                padding: 40px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }}
+            .header {{ text-align: center; margin-bottom: 30px; }}
+            .debug-section {{
+                background: rgba(255, 255, 255, 0.1);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+                font-family: monospace;
+                font-size: 0.9rem;
+            }}
+            .back-btn {{ 
+                display: inline-block; 
+                background: rgba(255, 255, 255, 0.2); 
+                color: white; 
+                padding: 15px 25px; 
+                text-decoration: none; 
+                border-radius: 10px; 
+                margin-bottom: 20px; 
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                transition: all 0.3s ease;
+            }}
+            .back-btn:hover {{
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }}
+            .status-ok {{ color: #4ade80; }}
+            .status-error {{ color: #f87171; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🔍 Debug Information</h1>
+                <a href="/" class="back-btn">← Back to Dashboard</a>
+            </div>
+            
+            <div class="debug-section">
+                <h3>📊 System Status</h3>
+                <p><strong>Total Participants Loaded:</strong> <span class="{'status-ok' if len(participants_data) >= 100 else 'status-error'}">{len(participants_data)}</span></p>
+                <p><strong>Expected Count:</strong> 113+ participants</p>
+                <p><strong>Status:</strong> <span class="{'status-ok' if len(participants_data) >= 100 else 'status-error'}">{'✅ OK' if len(participants_data) >= 100 else '❌ ISSUE DETECTED'}</span></p>
+            </div>
+            
+            <div class="debug-section">
+                <h3>📁 File Information</h3>
+                <p><strong>Excel File Exists:</strong> <span class="{'status-ok' if excel_exists else 'status-error'}">{'✅ Yes' if excel_exists else '❌ No'}</span></p>
+                <p><strong>Excel File Size:</strong> {excel_size} bytes</p>
+            </div>
+            
+            <div class="debug-section">
+                <h3>📅 Participants by Day</h3>
+                {''.join([f'<p><strong>{day}:</strong> {count} participants</p>' for day, count in day_counts.items()])}
+            </div>
+            
+            <div class="debug-section">
+                <h3>👥 Sample Participants (First 10)</h3>
+                {''.join([f'<p><strong>{i+1}.</strong> {pdata["fullName"]} - ID: {pid} - Email: {pdata["email"]}</p>' for i, (pid, pdata) in enumerate(sample_participants)])}
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return html
 
 @app.route('/qr-codes')
 def qr_codes():
