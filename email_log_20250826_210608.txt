@@ -1,0 +1,5 @@
+Email sending session started at 2025-08-26 21:06:08
+============================================================
+
+✅ Email sent to: ddhuha183@gmail.com - Dhuha Rasool Ismail - Email sent successfully
+✅ Email sent to: mr2021king@gmail.com - Kanar saeed hama aziz - Email sent successfully
